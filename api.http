@@ -1,0 +1,18 @@
+POST http://localhost:8888/signup
+Content-Type: application/json
+
+{
+  "name": "W_K.O",
+  "email": "oficialwko@gmail.com",
+  "password": "wK01234_"
+}
+
+###
+
+POST http://localhost:8888/signin
+Content-Type: application/json
+
+{
+  "email": "oficialwko@gmail.com",
+  "password": "wK01234_"
+}
