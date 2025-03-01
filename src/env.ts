@@ -5,7 +5,11 @@ const envSchema = z.object({
     POSTGRES_URL: z.string().url(),
     REDIS_URL: z.string().url(),
     JWT_SECRET_KEY: z.string(),
-    // WEB_URL: z.string().url(),
+    MAIL_USERNAME: z.string().email(),
+    MAIL_USERNAME_FROM: z.string().email(),
+    OAUTH_CLIENT_ID: z.string(),
+    OAUTH_CLIENT_SECRET: z.string(),
+    OAUTH_REFRESH_TOKEN: z.string(),
 })
 
 export const env = envSchema.parse(process.env)

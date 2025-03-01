@@ -9,8 +9,10 @@ import {
     validatorCompiler,
 } from 'fastify-type-provider-zod'
 import { env } from './env'
-import { signupRoute } from './routes/signup-route'
+import { recoveryPasswordRoute } from './routes/recovery-password-route'
+import { sendRecoveryPasswordEmailRoute } from './routes/send-recovery-password-email-route'
 import { signinRoute } from './routes/signin-route'
+import { signupRoute } from './routes/signup-route'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -38,6 +40,8 @@ app.register(fastifySwaggerUi, {
 
 app.register(signupRoute)
 app.register(signinRoute)
+app.register(sendRecoveryPasswordEmailRoute)
+app.register(recoveryPasswordRoute)
 
 app.get('/', () => {
     return 'Hello world'
