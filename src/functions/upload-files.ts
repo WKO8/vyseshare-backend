@@ -15,25 +15,27 @@ interface UploadFilesParams {
         mimetype: string
         file: NodeJS.ReadableStream
         toBuffer: () => Promise<Buffer>
-    }
+    },
+    uploadPath: string
+    serverIp: string
 }
 
-export async function uploadFiles({ data }: UploadFilesParams) {
+export async function uploadFiles({ data, uploadPath, serverIp }: UploadFilesParams) {
     const fileId = randomUUID()
-    const uploadDir = path.join(__dirname, '../uploads')
-    const filePath = path.join(uploadDir, `${fileId}-${data.filename}`)
+    const filePath = path.join(uploadPath, `${fileId}-${data.filename}`)
 
     // Criando diretório se não existir
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true })
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true })
 
-    // Salvando arquivo no sistema de arquivos
-    await pump(data.file, fs.createWriteStream(filePath))
+    // Lendo o arquivo como buffer e salvando no sistema de arquivos
+    const buffer = await data.toBuffer()
+    await fs.promises.writeFile(filePath, buffer)
 
     // Gerando URL de acesso ao arquivo
-    const fileUrl = `http://localhost:8888/uploads/${fileId}-${data.filename}`
+    const fileUrl = `http://${serverIp}:8888/uploads/${fileId}-${data.filename}`
 
-    const fileBuffer = await data.toBuffer()
-    const fileSize = fileBuffer.length
+    // Obtendo o tamanho do arquivo diretamente do sistema de arquivos
+    const fileSize = fs.statSync(filePath).size
 
     // Salvando metadados no PostgreSQL
     await db.insert(files).values({

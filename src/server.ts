@@ -15,6 +15,8 @@ import { signinRoute } from './routes/signin-route'
 import { signupRoute } from './routes/signup-route'
 import fastifyMultipart from '@fastify/multipart'
 import { uploadFilesRoute } from './routes/upload-files-route'
+import { setServerRoute } from './routes/set-server-route'
+import { downloadFilesRoute } from './routes/download-route'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -28,9 +30,9 @@ app.register(fastifyCors, {
 app.register(fastifySwagger, {
     openapi: {
         info: {
-            title: 'VyseNet',
+            title: 'VyseShare',
             version: '0.0.1',
-            description: 'API da aplicação VyseNet',
+            description: 'API da aplicação VyseShare',
         },
     },
     transform: jsonSchemaTransform,
@@ -40,13 +42,19 @@ app.register(fastifySwaggerUi, {
     routePrefix: '/docs',
 })
 
-app.register(fastifyMultipart)
+app.register(fastifyMultipart, {
+    limits: {
+        fileSize: 1000 * 1024 * 1024, // 1000MB -> 1GB 
+    }
+})
 
 app.register(signupRoute)
 app.register(signinRoute)
 app.register(sendRecoveryPasswordEmailRoute)
 app.register(recoveryPasswordRoute)
 app.register(uploadFilesRoute)
+app.register(setServerRoute)
+app.register(downloadFilesRoute)
 
 app.get('/', () => {
     return 'Hello world'

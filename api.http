@@ -39,12 +39,27 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8888/upload
+POST http://localhost:8888/set-server
+Content-Type: application/json
+
+{
+  "uploadPath": "./uploads"
+}
+
+###
+
+POST http://26.84.96.182:8888/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="file"; filename="testfile.txt"
-Content-Type: text/plain
+Content-Disposition: form-data; name="file"; filename="obs-studio.zip"
+Content-Type: application/x-rar-compressed
 
-This is a test file.
+< E:\VyseShare\uploads\obs-studio.zip
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+GET http://26.84.96.182:8888/download/232e6c60-1c3f-40cf-8c90-f96cca58cd49-testfile.txt
+
+###

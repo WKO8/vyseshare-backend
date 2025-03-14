@@ -1,12 +1,7 @@
-import { randomUUID } from 'node:crypto'
-import fs from 'node:fs'
-import path from 'node:path'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import z from 'zod'
-import { db } from '../drizzle/client'
-import { files } from '../drizzle/schema/files'
 import { uploadFiles } from '../functions/upload-files'
 import { redis } from '../redis/client'
 
@@ -34,6 +29,13 @@ export const uploadFilesRoute: FastifyPluginAsyncZod = async app => {
             },
         },
         async (request, reply) => {
+            const uploadPath = await redis.get('server:uploadPath')
+            const serverIp = await redis.get('server:ip')
+
+            if (!uploadPath || !serverIp) {
+                return reply.status(400).send({ error: 'Servidor não configurado!' })
+            }
+            
             const data = await request.file()
 
             if (!data) {
@@ -41,7 +43,7 @@ export const uploadFilesRoute: FastifyPluginAsyncZod = async app => {
             }
 
             try {
-                const result = await uploadFiles({ data })
+                const result = await uploadFiles({ data, uploadPath, serverIp })
                 return reply.status(201).send(result)
             } catch (err) {
                 return reply.status(500).send({ error: String(err) })
